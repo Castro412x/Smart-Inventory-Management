@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useAuth } from '@/context/AuthContext'
 import { subscribeProducts, subscribeTransactions, getDashboardStats } from '@/services/firestoreService'
-import { formatCurrency, formatNumber, formatRelative } from '@/utils/format'
+import { formatCurrency, formatNumber, formatRelative, formatDate } from '@/utils/format'
 import { CardSkeleton } from '@/components/ui/Skeleton'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -116,8 +116,9 @@ export function DashboardPage() {
               {recentTransactions.map(tx => (
                 <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
                   <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{tx.productName}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{tx.productName || products.find(p => p.id === tx.productId)?.name || 'Unknown'}</p>
                     <p className="text-xs text-gray-500">{formatRelative(tx.timestamp)}</p>
+                    <p className="text-xs text-gray-400">{formatDate(tx.timestamp)}</p>
                   </div>
                   <div className="text-right">
                     <Badge variant={tx.type === 'stock_in' ? 'success' : 'danger'}>
