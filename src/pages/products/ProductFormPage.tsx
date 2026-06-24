@@ -45,7 +45,7 @@ export function ProductFormPage() {
   const [saving, setSaving] = useState(false)
   const [skuChecking, setSkuChecking] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: {
       name: '', sku: '', categoryId: '', description: '',
@@ -86,7 +86,8 @@ export function ProductFormPage() {
       }
     }
     load()
-  }, [id, isEdit, setValue, navigate, toast])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isEdit, setValue, navigate])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -111,6 +112,8 @@ export function ProductFormPage() {
       if (existing) {
         toast.error('SKU already exists. Please use a unique SKU.')
       }
+    } catch {
+      // SKU check failed silently (e.g. network error)
     } finally {
       setSkuChecking(false)
     }
@@ -177,7 +180,7 @@ export function ProductFormPage() {
 
         <Input label="Product Name" {...register('name')} error={errors.name?.message} />
         <div>
-          <Input label="SKU" {...register('sku')} error={errors.sku?.message} onBlur={() => checkSku(watchedSku)} />
+          <Input label="SKU" {...register('sku', { onBlur: () => checkSku(watchedSku) })} error={errors.sku?.message} />
           {skuChecking && <p className="text-xs text-gray-400 mt-1">Checking SKU...</p>}
         </div>
         <Select
@@ -193,8 +196,8 @@ export function ProductFormPage() {
           <Input label="Min Stock" type="number" {...register('minStock')} error={errors.minStock?.message} />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <Input label="Cost Price ($)" type="number" step="0.01" {...register('costPrice')} error={errors.costPrice?.message} />
-          <Input label="Selling Price ($)" type="number" step="0.01" {...register('sellingPrice')} error={errors.sellingPrice?.message} />
+          <Input label="Cost Price (₦)" type="number" step="0.01" {...register('costPrice')} error={errors.costPrice?.message} />
+          <Input label="Selling Price (₦)" type="number" step="0.01" {...register('sellingPrice')} error={errors.sellingPrice?.message} />
         </div>
         <Input label="Supplier" {...register('supplier')} error={errors.supplier?.message} />
 
