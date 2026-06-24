@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { subscribeCategories, addCategory, updateCategory, deleteCategory } from '@/services/firestoreService'
+import { subscribeCategories, addCategory, updateCategory, deleteCategory, seedDefaultCategories } from '@/services/firestoreService'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -20,6 +20,19 @@ export function CategoriesPage() {
   const [editName, setEditName] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [seeding, setSeeding] = useState(false)
+
+  const handleSeedDefaults = async () => {
+    setSeeding(true)
+    try {
+      const count = await seedDefaultCategories()
+      toast.success(count > 0 ? `Added ${count} default categories` : 'Defaults already exist')
+    } catch {
+      toast.error('Failed to load defaults')
+    } finally {
+      setSeeding(false)
+    }
+  }
 
   useEffect(() => {
     const unsub = subscribeCategories((data) => {
@@ -120,9 +133,15 @@ export function CategoriesPage() {
       </div>
 
       {categories.length > 0 ? (
-        <Table columns={columns} data={categories} keyExtractor={c => c.id} />
+        <>
+          <Table columns={columns} data={categories} keyExtractor={c => c.id} />
+        </>
       ) : (
-        <EmptyState title="No categories yet" description="Add your first category above" />
+        <EmptyState
+          title="No categories yet"
+          description="Add your first category above or load defaults"
+          action={<Button onClick={handleSeedDefaults} loading={seeding}>Load Defaults</Button>}
+        />
       )}
 
       <ConfirmDialog
