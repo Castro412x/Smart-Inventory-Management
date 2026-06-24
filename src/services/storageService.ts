@@ -1,16 +1,23 @@
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
-import { storage } from '@/lib/firebase'
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/auto/upload`
 
-export async function uploadImage(file: File, path: string): Promise<string> {
-  const storageRef = ref(storage, path)
-  const snapshot = await uploadBytesResumable(storageRef, file)
-  return getDownloadURL(snapshot.ref)
+export async function uploadImage(file: File, publicId: string): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', UPLOAD_PRESET)
+  formData.append('public_id', publicId)
+
+  const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error?.message || 'Failed to upload image')
+  }
+  const data = await res.json()
+  return data.secure_url as string
 }
 
-export async function deleteImage(path: string) {
-  const storageRef = ref(storage, path)
-  await deleteObject(storageRef)
-}
+export async function deleteImage(_path: string) {}
 
 export function generateImagePath(uid: string, fileName: string): string {
   const ext = fileName.split('.').pop()
