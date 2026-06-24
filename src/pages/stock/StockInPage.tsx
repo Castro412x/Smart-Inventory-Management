@@ -80,10 +80,10 @@ export function StockInPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Stock In</h1>
+        <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Stock In</h1>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
           <Input placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)} />
@@ -113,9 +113,9 @@ export function StockInPage() {
         <Input label="Notes (optional)" {...register('notes')} error={errors.notes?.message} />
 
         {selectedProduct && (
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-sm">
-            <p>Current stock: <strong>{selectedProduct.quantity}</strong></p>
-            <p>New stock will be: <strong>{selectedProduct.quantity + Number(watch('quantity') || 0)}</strong></p>
+          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-sm font-body space-y-1">
+            <p className="text-gray-500 dark:text-gray-400">Current stock: <span className="font-semibold text-gray-800 dark:text-gray-200">{selectedProduct.quantity}</span></p>
+            <p className="text-gray-500 dark:text-gray-400">New stock will be: <span className="font-semibold text-accent-600 dark:text-accent-400">{selectedProduct.quantity + Number(watch('quantity') || 0)}</span></p>
           </div>
         )}
 

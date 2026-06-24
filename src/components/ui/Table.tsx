@@ -32,49 +32,49 @@ export function Table<T>({
 }: TableProps<T>) {
   if (!data.length) {
     return (
-      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+      <div className="text-center py-12 text-gray-400 dark:text-gray-500 font-body text-sm">
         {emptyMessage}
       </div>
     )
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead className="bg-gray-50 dark:bg-gray-800">
-          <tr>
+    <div className="overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-700/80 card-gradient">
+      <table className="min-w-full">
+        <thead>
+          <tr className="border-b border-gray-100 dark:border-gray-700/50">
             {columns.map(col => (
               <th
                 key={col.key}
                 className={cn(
-                  'px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider',
-                  col.sortable && 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200',
+                  'px-4 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest font-body',
+                  col.sortable && 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors',
                   col.className
                 )}
                 onClick={() => col.sortable && onSort?.(col.key)}
               >
-                <span className="inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1.5">
                   {col.header}
                   {col.sortable && sortKey === col.key && (
-                    <span>{sortDir === 'asc' ? '↑' : '↓'}</span>
+                    <span className="text-accent-500 text-[10px]">{sortDir === 'asc' ? '\u25B2' : '\u25BC'}</span>
                   )}
                 </span>
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+        <tbody className="divide-y divide-gray-100/80 dark:divide-gray-700/30">
           {data.map((item) => (
             <tr
               key={keyExtractor(item)}
               className={cn(
-                'transition-colors',
-                onRowClick ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                'transition-all duration-150',
+                onRowClick ? 'cursor-pointer hover:bg-gray-50/80 dark:hover:bg-gray-800/40' : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/20'
               )}
               onClick={() => onRowClick?.(item)}
             >
               {columns.map(col => (
-                <td key={col.key} className={cn('px-4 py-3 text-sm text-gray-700 dark:text-gray-300', col.className)}>
+                <td key={col.key} className={cn('px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300 font-body', col.className)}>
                   {col.render ? col.render(item) : (item as Record<string, unknown>)[col.key] as ReactNode}
                 </td>
               ))}

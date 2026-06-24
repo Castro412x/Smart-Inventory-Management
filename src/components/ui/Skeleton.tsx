@@ -6,13 +6,13 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div className={cn('animate-pulse rounded-md bg-gray-200 dark:bg-gray-700', className)} />
+    <div className={cn('animate-shimmer rounded-xl', className)} />
   )
 }
 
 export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-4">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex gap-4">
           {Array.from({ length: cols }).map((_, j) => (
@@ -26,7 +26,7 @@ export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-4">
+    <div className="rounded-xl border border-gray-200/80 dark:border-gray-700/50 p-6 space-y-4 card-gradient">
       <Skeleton className="h-4 w-24" />
       <Skeleton className="h-8 w-32" />
       <Skeleton className="h-3 w-20" />

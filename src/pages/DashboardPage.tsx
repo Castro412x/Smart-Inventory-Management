@@ -59,22 +59,22 @@ export function DashboardPage() {
   }
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+    <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">
             Welcome, {user?.displayName || 'User'}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Here's what's happening with your inventory</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 font-body">Here is what is happening with your inventory</p>
         </div>
       </div>
 
       <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatCard title="Total Products" value={formatNumber(stats?.totalProducts || 0)} color="blue" />
-        <StatCard title="Categories" value={formatNumber(stats?.totalCategories || 0)} color="green" />
-        <StatCard title="Inventory Value" value={formatCurrency(stats?.inventoryValue || 0)} color="purple" />
-        <StatCard title="Low Stock" value={formatNumber(stats?.lowStockCount || 0)} color="yellow" />
-        <StatCard title="Out of Stock" value={formatNumber(stats?.outOfStockCount || 0)} color="red" />
+        <StatCard title="Total Products" value={formatNumber(stats?.totalProducts || 0)} color="accent" />
+        <StatCard title="Categories" value={formatNumber(stats?.totalCategories || 0)} color="success" />
+        <StatCard title="Inventory Value" value={formatCurrency(stats?.inventoryValue || 0)} color="info" />
+        <StatCard title="Low Stock" value={formatNumber(stats?.lowStockCount || 0)} color="warning" />
+        <StatCard title="Out of Stock" value={formatNumber(stats?.outOfStockCount || 0)} color="danger" />
       </motion.div>
 
       <motion.div variants={item} className="flex flex-wrap gap-3">
@@ -90,37 +90,46 @@ export function DashboardPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div variants={item} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Inventory by Category</h2>
+        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+          <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Inventory by Category</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis dataKey="name" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-                <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 11%, 85%)" strokeOpacity={0.4} />
+                <XAxis dataKey="name" tick={{ fill: 'hsl(210, 8%, 55%)', fontSize: 12, fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: 'hsl(210, 8%, 55%)', fontSize: 12, fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px', color: '#F9FAFB' }}
+                  contentStyle={{
+                    backgroundColor: 'hsl(210, 12%, 13%)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    color: '#F9FAFB',
+                    fontSize: '13px',
+                    fontFamily: 'Plus Jakarta Sans',
+                    padding: '10px 14px',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                  }}
+                  cursor={{ fill: 'hsl(210, 14%, 93%)', fillOpacity: 0.3 }}
                 />
-                <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" fill="hsl(200, 85%, 42%)" radius={[6, 6, 0, 0]} maxBarSize={48} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No products yet</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm font-body">No products yet</p>
           )}
         </motion.div>
 
-        <motion.div variants={item} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent Transactions</h2>
+        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+          <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Recent Transactions</h2>
           {recentTransactions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-1">
               {recentTransactions.map(tx => (
-                <div key={tx.id} className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{tx.productName || products.find(p => p.id === tx.productId)?.name || 'Unknown'}</p>
-                    <p className="text-xs text-gray-500">{formatRelative(tx.timestamp)}</p>
-                    <p className="text-xs text-gray-400">{formatDate(tx.timestamp)}</p>
+                <div key={tx.id} className="flex items-center justify-between py-2.5 px-1 border-b border-gray-100/80 dark:border-gray-700/30 last:border-0">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate font-body">{tx.productName || products.find(p => p.id === tx.productId)?.name || 'Unknown'}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 font-body">{formatRelative(tx.timestamp)} &middot; {formatDate(tx.timestamp)}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex-shrink-0 ml-3">
                     <Badge variant={tx.type === 'stock_in' ? 'success' : 'danger'}>
                       {tx.type === 'stock_in' ? '+' : '-'}{tx.quantity}
                     </Badge>
@@ -129,24 +138,24 @@ export function DashboardPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No transactions yet</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm font-body">No transactions yet</p>
           )}
         </motion.div>
       </div>
 
       {(lowStockProducts.length > 0 || outOfStockProducts.length > 0) && (
-        <motion.div variants={item} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Stock Alerts</h2>
+        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+          <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Stock Alerts</h2>
           <div className="space-y-2">
             {outOfStockProducts.map(p => (
-              <div key={p.id} className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                <span className="text-sm font-medium text-red-700 dark:text-red-300">{p.name}</span>
+              <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-danger-bg dark:bg-danger/10">
+                <span className="text-sm font-medium text-danger font-body">{p.name}</span>
                 <Badge variant="danger">Out of Stock</Badge>
               </div>
             ))}
             {lowStockProducts.map(p => (
-              <div key={p.id} className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                <span className="text-sm font-medium text-yellow-700 dark:text-yellow-300">{p.name} ({p.quantity} left)</span>
+              <div key={p.id} className="flex items-center justify-between p-3 rounded-xl bg-warning-bg dark:bg-warning/10">
+                <span className="text-sm font-medium text-warning font-body">{p.name} ({p.quantity} left)</span>
                 <Badge variant="warning">Low Stock</Badge>
               </div>
             ))}
@@ -158,18 +167,18 @@ export function DashboardPage() {
 }
 
 function StatCard({ title, value, color }: { title: string; value: string; color: string }) {
-  const colors: Record<string, string> = {
-    blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-    green: 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-    purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
-    yellow: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
-    red: 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400',
+  const colors: Record<string, { bg: string; text: string }> = {
+    accent: { bg: 'bg-accent-50 dark:bg-accent-500/10', text: 'text-accent-600 dark:text-accent-400' },
+    success: { bg: 'bg-success-bg dark:bg-success/10', text: 'text-success dark:text-success' },
+    info: { bg: 'bg-info-bg dark:bg-info/10', text: 'text-info dark:text-info' },
+    warning: { bg: 'bg-warning-bg dark:bg-warning/10', text: 'text-warning dark:text-warning' },
+    danger: { bg: 'bg-danger-bg dark:bg-danger/10', text: 'text-danger dark:text-danger' },
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
-      <p className={`text-2xl font-bold mt-1 ${colors[color]?.split(' ').slice(2).join(' ') || ''}`}>{value}</p>
+    <div className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider font-body">{title}</p>
+      <p className={`text-2xl font-bold font-heading mt-1.5 ${colors[color]?.text || 'text-gray-800 dark:text-gray-100'}`}>{value}</p>
     </div>
   )
 }

@@ -118,8 +118,8 @@ export function CategoriesPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+      <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Categories</h1>
 
       <div className="flex gap-3">
         <Input

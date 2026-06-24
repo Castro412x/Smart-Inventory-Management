@@ -45,7 +45,7 @@ export function ProductFormPage() {
   const [saving, setSaving] = useState(false)
   const [skuChecking, setSkuChecking] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: {
       name: '', sku: '', categoryId: '', description: '',
@@ -164,17 +164,17 @@ export function ProductFormPage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+      <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100 mb-6">
         {isEdit ? 'Edit Product' : 'Add Product'}
       </h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image *</label>
+          <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 font-body">Image *</label>
           <div className="flex items-center gap-4">
             {imagePreview && (
-              <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-lg object-cover bg-gray-100" />
+              <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-xl object-cover bg-gray-100 ring-1 ring-gray-200 dark:ring-gray-700" />
             )}
-            <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 dark:file:bg-primary-900/50 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100" />
+            <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-accent-50 dark:file:bg-accent-500/10 file:text-accent-600 dark:file:text-accent-400 hover:file:bg-accent-100 dark:hover:file:bg-accent-500/20 file:transition-colors cursor-pointer" />
           </div>
         </div>
 

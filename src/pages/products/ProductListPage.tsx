@@ -120,9 +120,9 @@ export function ProductListPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Products</h1>
+        <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Products</h1>
         <Link to="/products/add"><Button>Add Product</Button></Link>
       </div>
 
@@ -153,7 +153,7 @@ export function ProductListPage() {
           />
           {pageCount > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <p className="text-sm text-gray-500">{filtered.length} products total</p>
+              <p className="text-sm text-gray-500 font-body">{filtered.length} products total</p>
               <div className="flex gap-2">
                 <Button size="sm" variant="secondary" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous</Button>
                 <Button size="sm" variant="secondary" disabled={page >= pageCount - 1} onClick={() => setPage(p => p + 1)}>Next</Button>

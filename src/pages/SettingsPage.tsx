@@ -12,7 +12,7 @@ export function SettingsPage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Settings</h1>
+      <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100 mb-6">Settings</h1>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
         <div>

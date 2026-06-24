@@ -64,8 +64,8 @@ export function TransactionsPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+      <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Transactions</h1>
 
       <div className="flex flex-wrap gap-3">
         <div className="w-64">
@@ -89,7 +89,7 @@ export function TransactionsPage() {
           <Table columns={columns} data={paged} keyExtractor={tx => tx.id} />
           {pageCount > 1 && (
             <div className="flex items-center justify-between pt-2">
-              <p className="text-sm text-gray-500">{filtered.length} transactions total</p>
+              <p className="text-sm text-gray-500 font-body">{filtered.length} transactions total</p>
               <div className="flex gap-2">
                 <Button size="sm" variant="secondary" disabled={page === 0} onClick={() => setPage(p => p - 1)}>Previous</Button>
                 <Button size="sm" variant="secondary" disabled={page >= pageCount - 1} onClick={() => setPage(p => p + 1)}>Next</Button>

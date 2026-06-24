@@ -56,12 +56,12 @@ export function ProfilePage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Profile</h1>
+      <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100 mb-6">Profile</h1>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+      <div className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-primary-500 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+            <div className="w-20 h-20 rounded-full bg-accent-500 flex items-center justify-center text-white text-2xl font-bold font-heading overflow-hidden shadow-sm">
               {imagePreview ? (
                 <img src={imagePreview} alt="Profile" className="w-full h-full object-cover" />
               ) : (
@@ -70,8 +70,8 @@ export function ProfilePage() {
             </div>
           </div>
           <div>
-            <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 dark:file:bg-primary-900/50 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100" />
-            <p className="text-xs text-gray-400 mt-1">JPG, PNG or GIF. Max 5MB.</p>
+            <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-accent-50 dark:file:bg-accent-500/10 file:text-accent-600 dark:file:text-accent-400 hover:file:bg-accent-100 dark:hover:file:bg-accent-500/20 file:transition-colors cursor-pointer" />
+            <p className="text-xs text-gray-400 mt-1 font-body">JPG, PNG or GIF. Max 5MB.</p>
           </div>
         </div>
 

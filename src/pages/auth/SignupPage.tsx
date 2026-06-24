@@ -48,11 +48,11 @@ export function SignupPage() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+    <div className="w-full max-w-md animate-fade-in">
+      <div className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 shadow-lg p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create Account</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Get started with SmartStock</p>
+          <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Create Account</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 font-body">Get started with SmartStock</p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input label="Full Name" {...register('displayName')} error={errors.displayName?.message} placeholder="John Doe" />
@@ -61,9 +61,9 @@ export function SignupPage() {
           <Input label="Confirm Password" type="password" {...register('confirmPassword')} error={errors.confirmPassword?.message} placeholder="••••••••" />
           <Button type="submit" loading={loading} className="w-full">Create Account</Button>
         </form>
-        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 font-body">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary-600 dark:text-primary-400 hover:underline font-medium">Sign in</Link>
+          <Link to="/login" className="text-accent-600 dark:text-accent-400 hover:text-accent-700 font-semibold transition-colors">Sign in</Link>
         </p>
       </div>
     </div>

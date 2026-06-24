@@ -152,7 +152,7 @@ export function ReportsPage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Reports</h1>
+        <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Reports</h1>
         <Button variant="secondary" onClick={handleExport} loading={exporting}>Export CSV</Button>
       </div>
 
