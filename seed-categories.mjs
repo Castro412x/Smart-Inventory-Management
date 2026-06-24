@@ -1,13 +1,28 @@
+import { readFileSync } from 'fs'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
 import { initializeApp } from 'firebase/app'
 import { getFirestore, collection, addDoc, getDocs, Timestamp } from 'firebase/firestore'
 
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const envPath = resolve(__dirname, '.env')
+const envRaw = readFileSync(envPath, 'utf-8')
+const env: Record<string, string> = {}
+for (const line of envRaw.split('\n')) {
+  const trimmed = line.trim()
+  if (!trimmed || trimmed.startsWith('#')) continue
+  const eqIdx = trimmed.indexOf('=')
+  if (eqIdx === -1) continue
+  env[trimmed.slice(0, eqIdx).trim()] = trimmed.slice(eqIdx + 1).trim()
+}
+
 const firebaseConfig = {
-  apiKey: 'AIzaSyAEsXvH4lEL4nhK1oJ4rQ_teByftjhO14I',
-  authDomain: 'smart-inventory-system-4c4ec.firebaseapp.com',
-  projectId: 'smart-inventory-system-4c4ec',
-  storageBucket: 'smart-inventory-system-4c4ec.firebasestorage.app',
-  messagingSenderId: '1053001889519',
-  appId: '1:1053001889519:web:727469c1f2b06fb80f8d1a',
+  apiKey: env.VITE_FIREBASE_API_KEY,
+  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.VITE_FIREBASE_APP_ID,
 }
 
 const app = initializeApp(firebaseConfig)
