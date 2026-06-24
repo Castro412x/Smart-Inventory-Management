@@ -13,7 +13,7 @@ export function formatRelative(date: Date | { toDate: () => Date } | undefined |
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount)
+  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount)
 }
 
 export function formatNumber(num: number): string {
