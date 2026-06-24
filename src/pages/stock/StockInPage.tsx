@@ -83,20 +83,20 @@ export function StockInPage() {
         <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100">Stock In</h1>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Product</label>
           <Input placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)} />
           <div className="max-h-40 overflow-y-auto space-y-1 mt-1">
             {filteredProducts.map(p => (
               <label key={p.id} className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                selectedProductId === p.id ? 'bg-primary-50 dark:bg-primary-900/30 border border-primary-300 dark:border-primary-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                selectedProductId === p.id ? 'bg-accent-50 dark:bg-accent-500/10 border border-accent-300 dark:border-accent-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
               }`}>
                 <input
                   type="radio"
                   value={p.id}
                   {...register('productId')}
-                  className="text-primary-600 focus:ring-primary-500"
+                  className="text-accent-600 focus:ring-accent-500"
                 />
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{p.name}</p>

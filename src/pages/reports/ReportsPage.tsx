@@ -163,7 +163,7 @@ export function ReportsPage() {
             onClick={() => setActiveReport(r.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeReport === r.key
-                ? 'bg-primary-600 text-white'
+                ? 'bg-accent-600 text-white'
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
