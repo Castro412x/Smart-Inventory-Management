@@ -44,7 +44,7 @@ export function StockOutPage() {
 
   const selectedProductId = watch('productId')
   const selectedProduct = products.find(p => p.id === selectedProductId)
-  const reqQty = watch('quantity') || 0
+  const reqQty = Number(watch('quantity')) || 0
   const exceedsStock = selectedProduct ? reqQty > selectedProduct.quantity : false
 
   const filteredProducts = products.filter(p =>
@@ -62,6 +62,7 @@ export function StockOutPage() {
     try {
       await performStockOperation(
         data.productId,
+        selectedProduct.name,
         selectedProduct.quantity,
         data.quantity,
         'stock_out',

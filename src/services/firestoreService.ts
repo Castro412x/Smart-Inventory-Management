@@ -31,6 +31,8 @@ export function subscribeProducts(
   return onSnapshot(q, (snapshot) => {
     const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product))
     callback(products)
+  }, (error) => {
+    console.error('Firestore subscription error:', error)
   })
 }
 
@@ -45,12 +47,25 @@ export async function getProduct(id: string): Promise<Product | null> {
 }
 
 export async function addProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
-  const docRef = await addDoc(productsRef, {
+  const batch = writeBatch(db)
+  const productRef = doc(collection(db, 'products'))
+  batch.set(productRef, {
     ...data,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
   })
-  return docRef.id
+  batch.set(doc(collection(db, 'transactions')), {
+    productId: productRef.id,
+    productName: data.name,
+    type: 'stock_in',
+    quantity: data.quantity,
+    previousStock: 0,
+    newStock: data.quantity,
+    notes: 'Initial stock',
+    timestamp: Timestamp.now(),
+  })
+  await batch.commit()
+  return productRef.id
 }
 
 export async function updateProduct(id: string, data: Partial<Product>) {
@@ -75,6 +90,8 @@ export function subscribeCategories(callback: (categories: Category[]) => void):
   return onSnapshot(q, (snapshot) => {
     const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category))
     callback(categories)
+  }, (error) => {
+    console.error('Categories subscription error:', error)
   })
 }
 
@@ -103,6 +120,20 @@ export async function getCategoryByName(name: string): Promise<Category | null> 
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as Category
 }
 
+const DEFAULT_CATEGORIES = [
+  'Drinks', 'Noodles', 'Biscuits', 'Toiletries', 'Toothpaste',
+  'Books', 'Sweets', 'Bags', 'Sanitary Pads', 'Soaps',
+  'Beverages', 'Eggs', 'Air Freshener',
+]
+
+export async function seedDefaultCategories() {
+  const existing = await getAllCategories()
+  const existingNames = new Set(existing.map(c => c.name.toLowerCase()))
+  const toAdd = DEFAULT_CATEGORIES.filter(c => !existingNames.has(c.toLowerCase()))
+  await Promise.all(toAdd.map(name => addCategory(name)))
+  return toAdd.length
+}
+
 // Transactions
 export function subscribeTransactions(
   callback: (transactions: Transaction[]) => void,
@@ -112,6 +143,8 @@ export function subscribeTransactions(
   return onSnapshot(q, (snapshot) => {
     const transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
     callback(transactions)
+  }, (error) => {
+    console.error('Transactions subscription error:', error)
   })
 }
 
@@ -121,9 +154,19 @@ export async function getAllTransactions(): Promise<Transaction[]> {
   return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
 }
 
+// Create a transaction entry
+export async function createTransaction(tx: Omit<Transaction, 'id' | 'timestamp'>) {
+  const docRef = await addDoc(transactionsRef, {
+    ...tx,
+    timestamp: Timestamp.now(),
+  })
+  return docRef.id
+}
+
 // Stock operations (atomic batch)
 export async function performStockOperation(
   productId: string,
+  productName: string,
   currentQuantity: number,
   quantityChange: number,
   type: 'stock_in' | 'stock_out',
@@ -134,6 +177,7 @@ export async function performStockOperation(
   batch.update(doc(db, 'products', productId), { quantity: newStock, updatedAt: Timestamp.now() })
   batch.set(doc(collection(db, 'transactions')), {
     productId,
+    productName,
     type,
     quantity: quantityChange,
     previousStock: currentQuantity,

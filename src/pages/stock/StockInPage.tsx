@@ -56,6 +56,7 @@ export function StockInPage() {
     try {
       await performStockOperation(
         data.productId,
+        selectedProduct.name,
         selectedProduct.quantity,
         data.quantity,
         'stock_in',
@@ -114,7 +115,7 @@ export function StockInPage() {
         {selectedProduct && (
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 text-sm">
             <p>Current stock: <strong>{selectedProduct.quantity}</strong></p>
-            <p>New stock will be: <strong>{selectedProduct.quantity + (watch('quantity') || 0)}</strong></p>
+            <p>New stock will be: <strong>{selectedProduct.quantity + Number(watch('quantity') || 0)}</strong></p>
           </div>
         )}
 
