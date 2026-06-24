@@ -26,7 +26,7 @@ export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: nu
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200/80 dark:border-gray-700/50 p-6 space-y-4 card-gradient">
+    <div className="rounded-xl border border-gray-200/80 dark:border-gray-700/50 p-6 space-y-4 bg-white dark:bg-gray-900">
       <Skeleton className="h-4 w-24" />
       <Skeleton className="h-8 w-32" />
       <Skeleton className="h-3 w-20" />

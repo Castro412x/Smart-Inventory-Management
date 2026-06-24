@@ -39,7 +39,7 @@ export function Table<T>({
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-700/80 card-gradient">
+    <div className="overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white dark:bg-gray-900">
       <table className="min-w-full">
         <thead>
           <tr className="border-b border-gray-100 dark:border-gray-700/50">

@@ -87,7 +87,7 @@ export function Navbar() {
                     initial={{ opacity: 0, y: -6, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                    className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700/50 py-1 card-gradient"
+                    className="absolute right-0 mt-2 w-48 rounded-xl bg-white dark:bg-gray-800 shadow-xl border border-gray-100 dark:border-gray-700/50 py-1"
                   >
                     <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700/30">
                       <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 font-heading truncate">

@@ -41,7 +41,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             initial={{ opacity: 0, scale: 0.95, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 shadow-2xl card-gradient"
+            className="relative z-10 w-full max-w-md rounded-2xl bg-white dark:bg-gray-800 shadow-2xl"
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 font-heading">{title}</h2>

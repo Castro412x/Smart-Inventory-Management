@@ -58,7 +58,7 @@ export function ProfilePage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-xl mx-auto">
       <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100 mb-6">Profile</h1>
 
-      <div className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm space-y-6">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm space-y-6">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-accent-500 flex items-center justify-center text-white text-2xl font-bold font-heading overflow-hidden shadow-sm">

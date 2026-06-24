@@ -167,7 +167,7 @@ export function ProductFormPage() {
       <h1 className="text-2xl font-heading font-bold text-gray-800 dark:text-gray-100 mb-6">
         {isEdit ? 'Edit Product' : 'Add Product'}
       </h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 font-body">Image *</label>
           <div className="flex items-center gap-4">

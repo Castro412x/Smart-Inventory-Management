@@ -8,7 +8,7 @@ export function Layout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center page-gradient">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="animate-spin h-8 w-8 border-4 border-accent-400 border-t-transparent rounded-full" />
       </div>
     )
@@ -19,7 +19,7 @@ export function Layout() {
   }
 
   return (
-    <div className="min-h-screen page-gradient">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Outlet />
@@ -37,7 +37,7 @@ export function AuthLayout() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="animate-spin h-8 w-8 border-4 border-primary-500 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-accent-500 border-t-transparent rounded-full" />
       </div>
     )
   }

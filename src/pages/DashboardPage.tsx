@@ -90,12 +90,12 @@ export function DashboardPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+        <motion.div variants={item} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
           <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Inventory by Category</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 11%, 85%)" strokeOpacity={0.4} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 11%, 85%)" className="dark:opacity-20" strokeOpacity={0.4} />
                 <XAxis dataKey="name" tick={{ fill: 'hsl(210, 8%, 55%)', fontSize: 12, fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: 'hsl(210, 8%, 55%)', fontSize: 12, fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} />
                 <Tooltip
@@ -119,7 +119,7 @@ export function DashboardPage() {
           )}
         </motion.div>
 
-        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+        <motion.div variants={item} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
           <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Recent Transactions</h2>
           {recentTransactions.length > 0 ? (
             <div className="space-y-1">
@@ -144,7 +144,7 @@ export function DashboardPage() {
       </div>
 
       {(lowStockProducts.length > 0 || outOfStockProducts.length > 0) && (
-        <motion.div variants={item} className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+        <motion.div variants={item} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
           <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Stock Alerts</h2>
           <div className="space-y-2">
             {outOfStockProducts.map(p => (
@@ -176,7 +176,7 @@ function StatCard({ title, value, color }: { title: string; value: string; color
   }
 
   return (
-    <div className="card-gradient rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
       <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider font-body">{title}</p>
       <p className={`text-2xl font-bold font-heading mt-1.5 ${colors[color]?.text || 'text-gray-800 dark:text-gray-100'}`}>{value}</p>
     </div>
