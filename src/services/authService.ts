@@ -6,7 +6,7 @@ import {
   updateProfile,
   User,
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 
 export async function signUp(email: string, password: string, displayName: string) {
@@ -36,9 +36,11 @@ export async function resetPassword(email: string) {
 }
 
 export async function updateUserProfile(user: User, data: { displayName?: string; photoURL?: string }) {
-  if (data.displayName) await updateProfile(user, { displayName: data.displayName })
-  if (data.photoURL) await updateProfile(user, { photoURL: data.photoURL })
-  await updateDoc(doc(db, 'users', user.uid), data)
+  const profile: { displayName?: string; photoURL?: string } = {}
+  if (data.displayName) profile.displayName = data.displayName
+  if (data.photoURL) profile.photoURL = data.photoURL
+  if (Object.keys(profile).length) await updateProfile(user, profile)
+  await setDoc(doc(db, 'users', user.uid), data, { merge: true })
 }
 
 export async function getUserProfile(uid: string) {

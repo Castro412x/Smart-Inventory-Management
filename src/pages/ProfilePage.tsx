@@ -46,7 +46,8 @@ export function ProfilePage() {
       }
       await updateUserProfile(user, { displayName, photoURL })
       toast.success('Profile updated')
-    } catch {
+    } catch (err) {
+      console.error('Profile update error:', err)
       toast.error('Failed to update profile')
     } finally {
       setSaving(false)
