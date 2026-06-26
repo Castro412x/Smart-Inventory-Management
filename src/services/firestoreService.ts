@@ -49,11 +49,13 @@ export async function getProduct(id: string): Promise<Product | null> {
 export async function addProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
   const batch = writeBatch(db)
   const productRef = doc(collection(db, 'products'))
-  batch.set(productRef, {
+  const payload: Record<string, unknown> = {
     ...data,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
-  })
+  }
+  if (data.expiryDate) payload.expiryDate = data.expiryDate instanceof Date ? Timestamp.fromDate(data.expiryDate) : data.expiryDate
+  batch.set(productRef, payload)
   batch.set(doc(collection(db, 'transactions')), {
     productId: productRef.id,
     productName: data.name,
@@ -69,7 +71,9 @@ export async function addProduct(data: Omit<Product, 'id' | 'createdAt' | 'updat
 }
 
 export async function updateProduct(id: string, data: Partial<Product>) {
-  await updateDoc(doc(db, 'products', id), { ...data, updatedAt: Timestamp.now() })
+  const payload: Record<string, unknown> = { ...data, updatedAt: Timestamp.now() }
+  if (data.expiryDate) payload.expiryDate = data.expiryDate instanceof Date ? Timestamp.fromDate(data.expiryDate) : data.expiryDate
+  await updateDoc(doc(db, 'products', id), payload)
 }
 
 export async function deleteProduct(id: string) {
@@ -195,16 +199,25 @@ export async function getDashboardStats(): Promise<{
   inventoryValue: number
   lowStockCount: number
   outOfStockCount: number
+  expiringSoonCount: number
 }> {
   const [products, categories] = await Promise.all([getAllProducts(), getAllCategories()])
   const inventoryValue = products.reduce((sum, p) => sum + p.costPrice * p.quantity, 0)
   const lowStockCount = products.filter(p => p.quantity > 0 && p.quantity <= p.minStock).length
   const outOfStockCount = products.filter(p => p.quantity === 0).length
+  const now = Date.now()
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000
+  const expiringSoonCount = products.filter(p => {
+    if (!p.expiryDate) return false
+    const expiry = p.expiryDate instanceof Date ? p.expiryDate.getTime() : (p.expiryDate as unknown as { toMillis: () => number }).toMillis()
+    return expiry - now > 0 && expiry - now <= thirtyDays
+  }).length
   return {
     totalProducts: products.length,
     totalCategories: categories.length,
     inventoryValue,
     lowStockCount,
     outOfStockCount,
+    expiringSoonCount,
   }
 }

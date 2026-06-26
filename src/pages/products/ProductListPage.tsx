@@ -12,7 +12,7 @@ import { Table, Column } from '@/components/ui/Table'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { formatCurrency, formatDate } from '@/utils/format'
+import { formatCurrency, formatDate, daysUntilExpiry } from '@/utils/format'
 import type { Product, Category } from '@/types'
 
 export function ProductListPage() {
@@ -100,6 +100,15 @@ export function ProductListPage() {
     )},
     { key: 'costPrice', header: 'Cost', render: (p) => formatCurrency(p.costPrice) },
     { key: 'sellingPrice', header: 'Selling', render: (p) => formatCurrency(p.sellingPrice) },
+    {
+      key: 'expiryDate', header: 'Expiry', sortable: true, render: (p) => {
+        const days = daysUntilExpiry(p.expiryDate)
+        if (days === null) return <span className="text-gray-400">-</span>
+        if (days < 0) return <span className="text-danger font-medium">Expired</span>
+        if (days <= 30) return <span className="text-warning font-medium">{days}d left</span>
+        return <span className="text-gray-500">{days}d</span>
+      }
+    },
     { key: 'createdAt', header: 'Date', sortable: true, render: (p) => formatDate(p.createdAt) },
     { key: 'actions', header: '', render: (p) => (
       <div className="flex gap-2" onClick={e => e.stopPropagation()}>

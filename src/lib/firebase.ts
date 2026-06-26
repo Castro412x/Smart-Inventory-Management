@@ -2,6 +2,18 @@ import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { initializeFirestore, connectFirestoreEmulator, CACHE_SIZE_UNLIMITED } from 'firebase/firestore'
 
+// Patch global fetch to strip credentials for Firestore requests,
+// fixing CORS error: ACAO wildcard '*' is not allowed when credentials mode is 'include'.
+// The Firestore SDK hardcodes setWithCredentials(true) on its XhrIo transport.
+const __origFetch = globalThis.fetch.bind(globalThis)
+globalThis.fetch = (input, init) => {
+  const url = typeof input === 'string' ? input : input instanceof Request ? input.url : ''
+  if (url.includes('firestore.googleapis.com')) {
+    init = { ...init, credentials: 'same-origin' }
+  }
+  return __origFetch(input, init)
+}
+
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -15,7 +27,7 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const db = initializeFirestore(app, {
   cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-  experimentalForceLongPolling: true,
+  experimentalAutoDetectLongPolling: false,
 })
 
 if (import.meta.env.VITE_USE_EMULATORS === 'true') {

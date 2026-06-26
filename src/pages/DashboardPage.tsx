@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { useAuth } from '@/context/AuthContext'
 import { subscribeProducts, subscribeTransactions, getDashboardStats } from '@/services/firestoreService'
-import { formatCurrency, formatNumber, formatRelative, formatDate } from '@/utils/format'
+import { formatCurrency, formatNumber, formatRelative, formatDate, daysUntilExpiry } from '@/utils/format'
 import { CardSkeleton } from '@/components/ui/Skeleton'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
@@ -51,8 +51,8 @@ export function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {Array.from({ length: 5 }).map((_, i) => <CardSkeleton key={i} />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
       </div>
     )
@@ -69,12 +69,13 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <motion.div variants={item} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <StatCard title="Total Products" value={formatNumber(stats?.totalProducts || 0)} color="accent" />
         <StatCard title="Categories" value={formatNumber(stats?.totalCategories || 0)} color="success" />
         <StatCard title="Inventory Value" value={formatCurrency(stats?.inventoryValue || 0)} color="info" />
         <StatCard title="Low Stock" value={formatNumber(stats?.lowStockCount || 0)} color="warning" />
         <StatCard title="Out of Stock" value={formatNumber(stats?.outOfStockCount || 0)} color="danger" />
+        <StatCard title="Expiring Soon" value={formatNumber(stats?.expiringSoonCount || 0)} color="warning" />
       </motion.div>
 
       <motion.div variants={item} className="flex flex-wrap gap-3">
@@ -142,6 +143,33 @@ export function DashboardPage() {
           )}
         </motion.div>
       </div>
+
+      {products.filter(p => p.expiryDate).length > 0 && (
+        <motion.div variants={item} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">
+          <h2 className="text-lg font-heading font-semibold text-gray-800 dark:text-gray-100 mb-5">Expiry Alerts</h2>
+          <div className="space-y-2">
+            {products
+              .filter(p => p.expiryDate)
+              .sort((a, b) => {
+                const da = daysUntilExpiry(a.expiryDate) ?? 999
+                const db = daysUntilExpiry(b.expiryDate) ?? 999
+                return da - db
+              })
+              .slice(0, 10)
+              .map(p => {
+                const days = daysUntilExpiry(p.expiryDate)
+                return (
+                  <div key={p.id} className={`flex items-center justify-between p-3 rounded-xl ${days !== null && days <= 0 ? 'bg-danger-bg dark:bg-danger/10' : days !== null && days <= 30 ? 'bg-warning-bg dark:bg-warning/10' : 'bg-gray-50 dark:bg-gray-800/50'}`}>
+                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 font-body">{p.name}</span>
+                    <Badge variant={days !== null && days <= 0 ? 'danger' : days !== null && days <= 30 ? 'warning' : 'success'}>
+                      {days !== null && days <= 0 ? 'Expired' : days !== null && days <= 30 ? `${days}d left` : 'OK'}
+                    </Badge>
+                  </div>
+                )
+              })}
+          </div>
+        </motion.div>
+      )}
 
       {(lowStockProducts.length > 0 || outOfStockProducts.length > 0) && (
         <motion.div variants={item} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/70 dark:border-gray-700/50 p-6 shadow-sm">

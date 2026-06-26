@@ -11,7 +11,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Skeleton } from '@/components/ui/Skeleton'
-import type { Category } from '@/types'
+import { format } from 'date-fns'
+import type { Category, Product } from '@/types'
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024
 
@@ -25,11 +26,12 @@ const schema = z.object({
   costPrice: z.coerce.number().min(0, 'Must be 0 or more'),
   sellingPrice: z.coerce.number().min(0, 'Must be 0 or more'),
   supplier: z.string().optional(),
+  expiryDate: z.string().optional(),
 })
 
 interface FormData {
   name: string; sku: string; categoryId: string; description?: string
-  quantity: number; minStock: number; costPrice: number; sellingPrice: number; supplier?: string
+  quantity: number; minStock: number; costPrice: number; sellingPrice: number; supplier?: string; expiryDate?: string
 }
 
 export function ProductFormPage() {
@@ -49,7 +51,7 @@ export function ProductFormPage() {
     resolver: zodResolver(schema) as any,
     defaultValues: {
       name: '', sku: '', categoryId: '', description: '',
-      quantity: 0, minStock: 5, costPrice: 0, sellingPrice: 0, supplier: '',
+      quantity: 0, minStock: 5, costPrice: 0, sellingPrice: 0, supplier: '', expiryDate: '',
     },
   })
 
@@ -75,6 +77,10 @@ export function ProductFormPage() {
           setValue('costPrice', product.costPrice)
           setValue('sellingPrice', product.sellingPrice)
           setValue('supplier', product.supplier)
+          if (product.expiryDate) {
+            const d = product.expiryDate instanceof Date ? product.expiryDate : product.expiryDate.toDate()
+            setValue('expiryDate', format(d, 'yyyy-MM-dd'))
+          }
           setExistingImageUrl(product.imageUrl)
           setImagePreview(product.imageUrl)
         }
@@ -136,12 +142,19 @@ export function ProductFormPage() {
       }
       const category = categories.find(c => c.id === data.categoryId)
       const productData = {
-        ...data,
+        name: data.name,
+        sku: data.sku,
+        categoryId: data.categoryId,
         description: data.description || '',
+        quantity: data.quantity,
+        minStock: data.minStock,
+        costPrice: data.costPrice,
+        sellingPrice: data.sellingPrice,
         supplier: data.supplier || '',
+        expiryDate: data.expiryDate ? new Date(data.expiryDate) : undefined,
         imageUrl,
         categoryName: category?.name || 'Uncategorized',
-      }
+      } as Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
       if (isEdit) {
         await updateProduct(id!, productData)
         toast.success('Product updated')
@@ -200,6 +213,7 @@ export function ProductFormPage() {
           <Input label="Selling Price (₦)" type="number" step="0.01" {...register('sellingPrice')} error={errors.sellingPrice?.message} />
         </div>
         <Input label="Supplier" {...register('supplier')} error={errors.supplier?.message} />
+        <Input label="Expiry Date" type="date" {...register('expiryDate')} error={errors.expiryDate?.message} />
 
         <div className="flex gap-3 pt-2">
           <Button type="submit" loading={saving}>{isEdit ? 'Update' : 'Create'} Product</Button>

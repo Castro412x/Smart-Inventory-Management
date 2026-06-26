@@ -19,6 +19,7 @@ export interface Product {
   costPrice: number
   sellingPrice: number
   supplier: string
+  expiryDate?: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -47,4 +48,5 @@ export interface DashboardStats {
   inventoryValue: number
   lowStockCount: number
   outOfStockCount: number
+  expiringSoonCount: number
 }

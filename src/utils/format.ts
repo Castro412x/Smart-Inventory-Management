@@ -19,3 +19,10 @@ export function formatCurrency(amount: number): string {
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat('en-US').format(num)
 }
+
+export function daysUntilExpiry(date: Date | { toDate: () => Date } | undefined | null): number | null {
+  if (!date) return null
+  const d = date instanceof Date ? date : date.toDate()
+  const diff = d.getTime() - Date.now()
+  return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
