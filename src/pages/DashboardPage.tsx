@@ -18,17 +18,19 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getDashboardStats().then(setStats).catch(() => {})
-    const unsubProducts = subscribeProducts((prods) => {
+    if (!user) return
+    const uid = user.uid
+    getDashboardStats(uid).then(setStats).catch(() => {})
+    const unsubProducts = subscribeProducts(uid, (prods) => {
       setProducts(prods)
-      getDashboardStats().then(setStats).catch(() => {})
+      getDashboardStats(uid).then(setStats).catch(() => {})
       setLoading(false)
     })
-    const unsubTx = subscribeTransactions((txs) => {
+    const unsubTx = subscribeTransactions(uid, (txs) => {
       setRecentTransactions(txs.slice(0, 5))
     }, [])
     return () => { unsubProducts(); unsubTx() }
-  }, [])
+  }, [user])
 
   const lowStockProducts = products.filter(p => p.quantity > 0 && p.quantity <= p.minStock)
   const outOfStockProducts = products.filter(p => p.quantity === 0)

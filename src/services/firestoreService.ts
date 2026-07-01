@@ -24,21 +24,27 @@ const transactionsRef = collection(db, 'transactions')
 
 // Products
 export function subscribeProducts(
+  userId: string,
   callback: (products: Product[]) => void,
   constraints: QueryConstraint[] = []
 ): Unsubscribe {
-  const q = query(productsRef, ...constraints)
+  const q = query(productsRef, where('userId', '==', userId), ...constraints)
   return onSnapshot(q, (snapshot) => {
-    const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product))
+    const products = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as Product))
+      .filter(p => p.userId === userId)
     callback(products)
   }, (error) => {
     console.error('Firestore subscription error:', error)
   })
 }
 
-export async function getAllProducts(): Promise<Product[]> {
-  const snap = await getDocs(productsRef)
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product))
+export async function getAllProducts(userId: string): Promise<Product[]> {
+  const q = query(productsRef, where('userId', '==', userId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Product))
+    .filter(p => p.userId === userId)
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
@@ -46,17 +52,19 @@ export async function getProduct(id: string): Promise<Product | null> {
   return snap.exists() ? { id: snap.id, ...snap.data() } as Product : null
 }
 
-export async function addProduct(data: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function addProduct(userId: string, data: Omit<Product, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) {
   const batch = writeBatch(db)
   const productRef = doc(collection(db, 'products'))
   const payload: Record<string, unknown> = {
     ...data,
+    userId,
     createdAt: Timestamp.now(),
     updatedAt: Timestamp.now(),
   }
   if (data.expiryDate) payload.expiryDate = data.expiryDate instanceof Date ? Timestamp.fromDate(data.expiryDate) : data.expiryDate
   batch.set(productRef, payload)
   batch.set(doc(collection(db, 'transactions')), {
+    userId,
     productId: productRef.id,
     productName: data.name,
     type: 'stock_in',
@@ -80,32 +88,42 @@ export async function deleteProduct(id: string) {
   await deleteDoc(doc(db, 'products', id))
 }
 
-export async function getProductBySku(sku: string, excludeId?: string): Promise<Product | null> {
-  const q = query(productsRef, where('sku', '==', sku))
+export async function getProductBySku(sku: string, userId: string, excludeId?: string): Promise<Product | null> {
+  const q = query(productsRef, where('sku', '==', sku), where('userId', '==', userId))
   const snap = await getDocs(q)
-  const products = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product))
+  const products = snap.docs
+    .map(d => ({ id: d.id, ...d.data() } as Product))
+    .filter(p => p.userId === userId)
   const match = excludeId ? products.find(p => p.id !== excludeId) : products[0]
   return match || null
 }
 
 // Categories
-export function subscribeCategories(callback: (categories: Category[]) => void): Unsubscribe {
-  const q = query(categoriesRef, orderBy('name'))
+export function subscribeCategories(
+  userId: string,
+  callback: (categories: Category[]) => void
+): Unsubscribe {
+  const q = query(categoriesRef, where('userId', '==', userId), orderBy('name'))
   return onSnapshot(q, (snapshot) => {
-    const categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category))
+    const categories = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as Category))
+      .filter(c => c.userId === userId)
     callback(categories)
   }, (error) => {
     console.error('Categories subscription error:', error)
   })
 }
 
-export async function getAllCategories(): Promise<Category[]> {
-  const snap = await getDocs(categoriesRef)
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Category))
+export async function getAllCategories(userId: string): Promise<Category[]> {
+  const q = query(categoriesRef, where('userId', '==', userId))
+  const snap = await getDocs(q)
+  return snap.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Category))
+    .filter(c => c.userId === userId)
 }
 
-export async function addCategory(name: string) {
-  const docRef = await addDoc(categoriesRef, { name, createdAt: Timestamp.now() })
+export async function addCategory(userId: string, name: string) {
+  const docRef = await addDoc(categoriesRef, { userId, name, createdAt: Timestamp.now() })
   return docRef.id
 }
 
@@ -117,11 +135,13 @@ export async function deleteCategory(id: string) {
   await deleteDoc(doc(db, 'categories', id))
 }
 
-export async function getCategoryByName(name: string): Promise<Category | null> {
-  const q = query(categoriesRef, where('name', '==', name))
+export async function getCategoryByName(name: string, userId: string): Promise<Category | null> {
+  const q = query(categoriesRef, where('name', '==', name), where('userId', '==', userId))
   const snap = await getDocs(q)
-  if (snap.empty) return null
-  return { id: snap.docs[0].id, ...snap.docs[0].data() } as Category
+  const matches = snap.docs
+    .map(d => ({ id: d.id, ...d.data() } as Category))
+    .filter(c => c.userId === userId)
+  return matches[0] || null
 }
 
 const DEFAULT_CATEGORIES = [
@@ -130,32 +150,37 @@ const DEFAULT_CATEGORIES = [
   'Beverages', 'Eggs', 'Air Freshener',
 ]
 
-export async function seedDefaultCategories() {
-  const existing = await getAllCategories()
+export async function seedDefaultCategories(userId: string) {
+  const existing = await getAllCategories(userId)
   const existingNames = new Set(existing.map(c => c.name.toLowerCase()))
   const toAdd = DEFAULT_CATEGORIES.filter(c => !existingNames.has(c.toLowerCase()))
-  await Promise.all(toAdd.map(name => addCategory(name)))
+  await Promise.all(toAdd.map(name => addCategory(userId, name)))
   return toAdd.length
 }
 
 // Transactions
 export function subscribeTransactions(
+  userId: string,
   callback: (transactions: Transaction[]) => void,
   constraints: QueryConstraint[] = []
 ): Unsubscribe {
-  const q = query(transactionsRef, orderBy('timestamp', 'desc'), ...constraints)
+  const q = query(transactionsRef, where('userId', '==', userId), orderBy('timestamp', 'desc'), ...constraints)
   return onSnapshot(q, (snapshot) => {
-    const transactions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
+    const transactions = snapshot.docs
+      .map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
+      .filter(tx => tx.userId === userId)
     callback(transactions)
   }, (error) => {
     console.error('Transactions subscription error:', error)
   })
 }
 
-export async function getAllTransactions(): Promise<Transaction[]> {
-  const q = query(transactionsRef, orderBy('timestamp', 'desc'))
+export async function getAllTransactions(userId: string): Promise<Transaction[]> {
+  const q = query(transactionsRef, where('userId', '==', userId), orderBy('timestamp', 'desc'))
   const snap = await getDocs(q)
-  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
+  return snap.docs
+    .map(doc => ({ id: doc.id, ...doc.data() } as Transaction))
+    .filter(tx => tx.userId === userId)
 }
 
 // Create a transaction entry
@@ -169,6 +194,7 @@ export async function createTransaction(tx: Omit<Transaction, 'id' | 'timestamp'
 
 // Stock operations (atomic batch)
 export async function performStockOperation(
+  userId: string,
   productId: string,
   productName: string,
   currentQuantity: number,
@@ -180,6 +206,7 @@ export async function performStockOperation(
   const newStock = type === 'stock_in' ? currentQuantity + quantityChange : currentQuantity - quantityChange
   batch.update(doc(db, 'products', productId), { quantity: newStock, updatedAt: Timestamp.now() })
   batch.set(doc(collection(db, 'transactions')), {
+    userId,
     productId,
     productName,
     type,
@@ -193,7 +220,7 @@ export async function performStockOperation(
 }
 
 // Stats
-export async function getDashboardStats(): Promise<{
+export async function getDashboardStats(userId: string): Promise<{
   totalProducts: number
   totalCategories: number
   inventoryValue: number
@@ -201,7 +228,7 @@ export async function getDashboardStats(): Promise<{
   outOfStockCount: number
   expiringSoonCount: number
 }> {
-  const [products, categories] = await Promise.all([getAllProducts(), getAllCategories()])
+  const [products, categories] = await Promise.all([getAllProducts(userId), getAllCategories(userId)])
   const inventoryValue = products.reduce((sum, p) => sum + p.costPrice * p.quantity, 0)
   const lowStockCount = products.filter(p => p.quantity > 0 && p.quantity <= p.minStock).length
   const outOfStockCount = products.filter(p => p.quantity === 0).length

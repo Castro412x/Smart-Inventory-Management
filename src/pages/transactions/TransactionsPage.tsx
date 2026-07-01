@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { subscribeTransactions } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Table, Column } from '@/components/ui/Table'
@@ -12,6 +13,7 @@ import { formatDate, formatNumber } from '@/utils/format'
 import type { Transaction } from '@/types'
 
 export function TransactionsPage() {
+  const { user } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -20,12 +22,13 @@ export function TransactionsPage() {
   const perPage = 15
 
   useEffect(() => {
-    const unsub = subscribeTransactions((data) => {
+    if (!user) return
+    const unsub = subscribeTransactions(user.uid, (data) => {
       setTransactions(data)
       setLoading(false)
     })
     return unsub
-  }, [])
+  }, [user])
 
   const filtered = useMemo(() => {
     let result = [...transactions]

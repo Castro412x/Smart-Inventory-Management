@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { getAllProducts, getAllTransactions } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
 import { Table, Column } from '@/components/ui/Table'
@@ -13,6 +14,7 @@ import type { Product, Transaction } from '@/types'
 type ReportType = 'inventory' | 'low-stock' | 'out-of-stock' | 'movements'
 
 export function ReportsPage() {
+  const { user } = useAuth()
   const toast = useToast()
   const [activeReport, setActiveReport] = useState<ReportType>('inventory')
   const [products, setProducts] = useState<Product[]>([])
@@ -21,9 +23,10 @@ export function ReportsPage() {
   const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
+    if (!user) return
     const load = async () => {
       try {
-        const [prods, txs] = await Promise.all([getAllProducts(), getAllTransactions()])
+        const [prods, txs] = await Promise.all([getAllProducts(user.uid), getAllTransactions(user.uid)])
         setProducts(prods)
         setTransactions(txs)
       } catch {
@@ -33,7 +36,7 @@ export function ReportsPage() {
       }
     }
     load()
-  }, [])
+  }, [user])
 
   const reports: { key: ReportType; label: string; description: string }[] = [
     { key: 'inventory', label: 'Current Inventory', description: 'All products with full details' },

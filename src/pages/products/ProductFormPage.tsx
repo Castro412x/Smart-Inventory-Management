@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { subscribeCategories, addProduct, updateProduct, getProduct, getProductBySku } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { uploadImage, deleteImage, generateImagePath } from '@/services/storageService'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
@@ -35,6 +36,7 @@ interface FormData {
 }
 
 export function ProductFormPage() {
+  const { user } = useAuth()
   const { id } = useParams()
   const isEdit = !!id
   const navigate = useNavigate()
@@ -58,9 +60,10 @@ export function ProductFormPage() {
   const watchedSku = watch('sku')
 
   useEffect(() => {
-    const unsub = subscribeCategories(setCategories)
+    if (!user) return
+    const unsub = subscribeCategories(user.uid, setCategories)
     return unsub
-  }, [])
+  }, [user])
 
   useEffect(() => {
     if (!isEdit) return
@@ -78,7 +81,7 @@ export function ProductFormPage() {
           setValue('sellingPrice', product.sellingPrice)
           setValue('supplier', product.supplier)
           if (product.expiryDate) {
-            const d = product.expiryDate instanceof Date ? product.expiryDate : product.expiryDate.toDate()
+            const d = product.expiryDate instanceof Date ? product.expiryDate : (product.expiryDate as unknown as { toDate: () => Date }).toDate()
             setValue('expiryDate', format(d, 'yyyy-MM-dd'))
           }
           setExistingImageUrl(product.imageUrl)
@@ -111,10 +114,10 @@ export function ProductFormPage() {
   }
 
   const checkSku = async (sku: string) => {
-    if (!sku) return
+    if (!sku || !user) return
     setSkuChecking(true)
     try {
-      const existing = await getProductBySku(sku, id)
+      const existing = await getProductBySku(sku, user.uid, id)
       if (existing) {
         toast.error('SKU already exists. Please use a unique SKU.')
       }
@@ -159,7 +162,8 @@ export function ProductFormPage() {
         await updateProduct(id!, productData)
         toast.success('Product updated')
       } else {
-        await addProduct(productData)
+        if (!user) return
+        await addProduct(user.uid, productData)
         toast.success('Product added')
       }
       navigate('/products')

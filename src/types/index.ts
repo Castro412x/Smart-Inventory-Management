@@ -8,6 +8,7 @@ export interface UserProfile {
 
 export interface Product {
   id: string
+  userId: string
   name: string
   sku: string
   categoryId: string
@@ -26,12 +27,14 @@ export interface Product {
 
 export interface Category {
   id: string
+  userId: string
   name: string
   createdAt: Date
 }
 
 export interface Transaction {
   id: string
+  userId: string
   productId: string
   productName: string
   type: 'stock_in' | 'stock_out'

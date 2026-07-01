@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { motion } from 'framer-motion'
 import { subscribeProducts, performStockOperation } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -22,6 +23,7 @@ interface FormData {
 }
 
 export function StockInPage() {
+  const { user } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
   const [products, setProducts] = useState<Product[]>([])
@@ -30,12 +32,13 @@ export function StockInPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    const unsub = subscribeProducts((data) => {
+    if (!user) return
+    const unsub = subscribeProducts(user.uid, (data) => {
       setProducts(data)
       setLoading(false)
     })
     return unsub
-  }, [])
+  }, [user])
 
   const { register, handleSubmit, formState: { errors }, watch, reset } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
@@ -51,10 +54,11 @@ export function StockInPage() {
   )
 
   const onSubmit = async (data: FormData) => {
-    if (!selectedProduct) return
+    if (!selectedProduct || !user) return
     setSaving(true)
     try {
       await performStockOperation(
+        user.uid,
         data.productId,
         selectedProduct.name,
         selectedProduct.quantity,

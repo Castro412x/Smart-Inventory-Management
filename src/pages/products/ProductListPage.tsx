@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { subscribeProducts, deleteProduct } from '@/services/firestoreService'
 import { subscribeCategories } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -16,6 +17,7 @@ import { formatCurrency, formatDate, daysUntilExpiry } from '@/utils/format'
 import type { Product, Category } from '@/types'
 
 export function ProductListPage() {
+  const { user } = useAuth()
   const navigate = useNavigate()
   const toast = useToast()
   const [products, setProducts] = useState<Product[]>([])
@@ -31,13 +33,15 @@ export function ProductListPage() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    const unsubProducts = subscribeProducts((data) => {
+    if (!user) return
+    const uid = user.uid
+    const unsubProducts = subscribeProducts(uid, (data) => {
       setProducts(data)
       setLoading(false)
     })
-    const unsubCats = subscribeCategories(setCategories)
+    const unsubCats = subscribeCategories(uid, setCategories)
     return () => { unsubProducts(); unsubCats() }
-  }, [])
+  }, [user])
 
   const filtered = useMemo(() => {
     let result = [...products]

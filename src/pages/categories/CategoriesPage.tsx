@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { subscribeCategories, addCategory, updateCategory, deleteCategory, seedDefaultCategories } from '@/services/firestoreService'
+import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/useToast'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -11,6 +12,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import type { Category } from '@/types'
 
 export function CategoriesPage() {
+  const { user } = useAuth()
   const toast = useToast()
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -23,9 +25,10 @@ export function CategoriesPage() {
   const [seeding, setSeeding] = useState(false)
 
   const handleSeedDefaults = async () => {
+    if (!user) return
     setSeeding(true)
     try {
-      const count = await seedDefaultCategories()
+      const count = await seedDefaultCategories(user.uid)
       toast.success(count > 0 ? `Added ${count} default categories` : 'Defaults already exist')
     } catch {
       toast.error('Failed to load defaults')
@@ -35,23 +38,24 @@ export function CategoriesPage() {
   }
 
   useEffect(() => {
-    const unsub = subscribeCategories((data) => {
+    if (!user) return
+    const unsub = subscribeCategories(user.uid, (data) => {
       setCategories(data)
       setLoading(false)
     })
     return unsub
-  }, [])
+  }, [user])
 
   const handleAdd = async () => {
     const trimmed = newName.trim()
-    if (!trimmed) return
+    if (!trimmed || !user) return
     if (categories.some(c => c.name.toLowerCase() === trimmed.toLowerCase())) {
       toast.error('Category already exists')
       return
     }
     setAdding(true)
     try {
-      await addCategory(trimmed)
+      await addCategory(user.uid, trimmed)
       setNewName('')
       toast.success('Category added')
     } catch {
